@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KC Cups - Start Your Fundraiser</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            line-height: 1.6;
+            color: #1a1a1a;
+            background: #f7f9fc;
+        }
+
+        .kc-intake-container {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .kc-header {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .kc-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .kc-progress-bar {
+            flex: 1;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .kc-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6, #2563eb);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .kc-progress-text {
+            font-size: 14px;
+            color: #6b7280;
+            white-space: nowrap;
+        }
+
+        .kc-time-hint {
+            font-size: 13px;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .kc-card {
+            background: white;
+            border-radius: 12px;
+            padding: 32px 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .kc-step {
+            display: none;
+        }
+
+        .kc-step.active {
+            display: block;
+        }
+
+        .kc-title {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #111827;
+        }
+
+        .kc-subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            margin-bottom: 24px;
+        }
+
+        .kc-form-group {
+            margin-bottom: 20px;
+        }
+
+        .kc-label {
+            display: block;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .kc-input,
+        .kc-textarea,
+        .kc-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .kc-input:focus,
+        .kc-textarea:focus,
+        .kc-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .kc-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .kc-file-upload {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 32px;
+            border: 2px dashed #d1d5db;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: #f9fafb;
+        }
+
+        .kc-file-upload:hover {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .kc-file-upload.has-file {
+            border-style: solid;
+            border-color: #10b981;
+            background: #f0fdf4;
+        }
+
+        .kc-file-input {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        .kc-upload-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 12px;
+            fill: #6b7280;
+        }
+
+        .kc-upload-text {
+            font-size: 14px;
+            color: #374151;
+            margin-bottom: 4px;
+        }
+
+        .kc-upload-hint {
+            font-size: 13px;
+            color: #9ca3af;
+        }
+
+        .kc-preview-container {
+            margin-top: 24px;
+            text-align: center;
+        }
+
+        .kc-preview-tumbler {
+            position: relative;
+            max-width: 300px;
+            margin: 0 auto 12px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .kc-preview-tumbler img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .kc-preview-overlay {
+            position: absolute;
+            top: 45%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 18%;
+            height: auto;
+	    max-width: 120px;
+            /* Enhanced stainless steel etching effect */
+            filter: brightness(3) contrast(2) invert(1) drop-shadow(0 1px 2px rgba(255,255,255,0.8));
+            mix-blend-mode: screen;
+            opacity: 0.95;
+        }
+
+        .kc-style-preview-overlay {
+            /* Enhanced stainless steel effect for product previews */
+            filter: brightness(3) contrast(2) invert(1) drop-shadow(0 1px 1px rgba(255,255,255,0.6));
+            mix-blend-mode: screen;
+            opacity: 0.9;
+        }
+
+        .kc-goal-slider {
+            -webkit-appearance: none;
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #e5e7eb;
+            outline: none;
+            opacity: 0.9;
+            transition: opacity 0.2s;
+        }
+
+        .kc-goal-slider:hover {
+            opacity: 1;
+        }
+
+        .kc-goal-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .kc-goal-slider::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #10b981);
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .kc-preview-caption {
+            font-size: 13px;
+            color: #6b7280;
+            font-style: italic;
+        }
+
+        .kc-choice-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .kc-choice-tile {
+            position: relative;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .kc-choice-tile:hover {
+            border-color: #93c5fd;
+            background: #f0f9ff;
+        }
+
+        .kc-choice-tile.selected {
+            border-color: #3b82f6;
+            background: #eff6ff;
+        }
+
+        .kc-choice-tile input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .kc-choice-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .kc-color-swatches {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .kc-color-swatch {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+            overflow: hidden;
+        }
+
+        .kc-color-swatch:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .kc-color-swatch.selected {
+            box-shadow: 0 0 0 3px #3b82f6;
+        }
+
+        .kc-color-swatch input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+        }
+
+        .kc-color-swatch-inner {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kc-color-swatch.selected .kc-color-swatch-inner::after {
+            content: '✓';
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+        }
+
+        .kc-checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 20px 0;
+        }
+
+        .kc-checkbox {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .kc-checkbox-label {
+            font-size: 14px;
+            color: #374151;
+            cursor: pointer;
+        }
+
+        .kc-button-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+        }
+
+        .kc-button {
+            flex: 1;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .kc-button-secondary {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .kc-button-secondary:hover {
+            background: #e5e7eb;
+        }
+
+        .kc-button-primary {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            color: white;
+        }
+
+        .kc-button-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+
+        .kc-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .kc-error {
+            color: #ef4444;
+            font-size: 13px;
+            margin-top: 4px;
+            display: none;
+        }
+
+        .kc-error.show {
+            display: block;
+        }
+
+        .kc-decision-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .kc-decision-button {
+            padding: 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+
+        .kc-decision-button:hover {
+            border-color: #3b82f6;
+            background: #f0f9ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.2);
+        }
+
+        .kc-decision-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .kc-decision-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .kc-decision-desc {
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .kc-booking-widget {
+            margin: 24px 0;
+            min-height: 600px;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .kc-recap {
+            background: #f9fafb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+
+        .kc-recap-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #111827;
+        }
+
+        .kc-recap-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 14px;
+        }
+
+        .kc-recap-label {
+            color: #6b7280;
+        }
+
+        .kc-recap-value {
+            color: #111827;
+            font-weight: 500;
+        }
+
+        .kc-success-message {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .kc-success-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .kc-success-icon svg {
+            width: 32px;
+            height: 32px;
+            fill: white;
+        }
+
+        @media (max-width: 640px) {
+            .kc-intake-container {
+                padding: 12px;
+            }
+
+            .kc-card {
+                padding: 24px 16px;
+            }
+
+            .kc-decision-buttons {
+                grid-template-columns: 1fr;
+            }
+
+            .kc-choice-grid {
+                grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="kc-intake-container">
+        <!-- Progress Header -->
+        <div class="kc-header">
+            <div class="kc-progress">
+                <div class="kc-progress-bar">
+                    <div class="kc-progress-fill" id="progressFill" style="width: 0%;"></div>
+                </div>
+                <span class="kc-progress-text" id="progressText">Step 1 of 9</span>
+            </div>
+            <div class="kc-time-hint">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <polyline points="12 6 12 12 16 14"></polyline>
+                </svg>
+                ~4 minutes
+            </div>
+        </div>
+
+        <!-- Main Card -->
+        <div class="kc-card">
+            <!-- Step 1: Initial Decision -->
+            <div class="kc-step active" id="step1">
+                <h2 class="kc-title">Let's get your fundraiser started!</h2>
+                <p class="kc-subtitle">How would you like to proceed?</p>
+                
+                <div class="kc-decision-buttons">
+                    <button class="kc-decision-button" onclick="showBookingWidget()">
+                        <div class="kc-decision-icon">📞</div>
+                        <div class="kc-decision-title">Schedule a Call</div>
+                        <div class="kc-decision-desc">Talk with our Fundraiser Specialist</div>
+                    </button>
+                    <button class="kc-decision-button" onclick="goToStep(2)">
+                        <div class="kc-decision-icon">⚡</div>
+                        <div class="kc-decision-title">Get Started Now</div>
+                        <div class="kc-decision-desc">Self-serve in just 4 minutes</div>
+                    </button>
+                </div>
+                
+                <div id="bookingWidget" style="display: none;">
+                    <div class="kc-booking-widget">
+                        <iframe src="https://api.leadconnectorhq.com/widget/booking/0STwaZtPXQA0YRINelKE" 
+                                style="width: 100%;border:none;overflow: hidden;min-height:600px;" 
+                                scrolling="no" 
+                                id="0STwaZtPXQA0YRINelKE_1756783772651"></iframe>
+                    </div>
+                    <div class="kc-button-group">
+                        <button class="kc-button kc-button-primary" onclick="goToStep(2)">Continue with Self-Serve →</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Mascot and Email (Optional) -->
+            <div class="kc-step" id="step2">
+                <h2 class="kc-title">Tell us about your school</h2>
+                <p class="kc-subtitle">This helps us personalize your experience (both optional)</p>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="mascot">What's your school mascot?</label>
+                    <input type="text" class="kc-input" id="mascot" placeholder="e.g., Eagles, Tigers, Warriors">
+                </div>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="emailOptional">Email address</label>
+                    <input type="email" class="kc-input" id="emailOptional" placeholder="your@email.com">
+                    <span class="kc-error" id="emailOptionalError">Please enter a valid email address</span>
+                </div>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(1)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateStep2()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 3: Upload Design -->
+            <div class="kc-step" id="step3">
+                <h2 class="kc-title" id="uploadTitle">Upload your design</h2>
+                <p class="kc-subtitle">We'll show you a live preview on a tumbler</p>
+                
+                <div class="kc-form-group">
+                    <label class="kc-file-upload" id="fileUploadArea">
+                        <input type="file" class="kc-file-input" id="designFile" accept=".png,.jpg,.jpeg,.svg,.pdf" onchange="handleFileUpload(event, 'design1')">
+                        <svg class="kc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span class="kc-upload-text">Click to upload or drag and drop</span>
+                        <span class="kc-upload-hint">PNG, JPG, SVG, or PDF (max 10MB)</span>
+                    </label>
+                </div>
+                
+                <div class="kc-preview-container" id="previewContainer" style="display: none;">
+                    <div class="kc-preview-tumbler">
+                        <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7c3a976561e36481a2d14.jpeg" alt="Black tumbler mockup">
+                        <img class="kc-preview-overlay" id="designPreview" src="" alt="Your design">
+                    </div>
+                    <p class="kc-preview-caption">Preview shows your artwork as a stainless etch on a 20oz black tumbler.</p>
+                </div>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(2)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateStep3()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 4: Choose Product Styles -->
+            <div class="kc-step" id="step4">
+                <h2 class="kc-title">Choose your product style(s)</h2>
+                <p class="kc-subtitle">Select at least one style (up to 6)</p>
+                
+                <div class="kc-choice-grid" id="styleGrid">
+                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+                        <input type="checkbox" name="style" value="20oz Tumbler" onchange="updateStyleSelection()">
+                        <div style="position: relative; margin-bottom: 8px;">
+                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7c3a976561e36481a2d14.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                            <img class="kc-style-preview-overlay" data-style="20oz Tumbler" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 35%; height: auto; display: none;">
+                        </div>
+                        <span class="kc-choice-label">20oz Tumbler</span>
+                    </label>
+                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+                        <input type="checkbox" name="style" value="30oz Tumbler" onchange="updateStyleSelection()">
+                        <div style="position: relative; margin-bottom: 8px;">
+                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d08c6b3e00660b1b8591.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                            <img class="kc-style-preview-overlay" data-style="30oz Tumbler" style="position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 35%; height: auto; display: none;">
+                        </div>
+                        <span class="kc-choice-label">30oz Tumbler</span>
+                    </label>
+                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+                        <input type="checkbox" name="style" value="15oz Mug" onchange="updateStyleSelection()">
+                        <div style="position: relative; margin-bottom: 8px;">
+                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68ba54c762a05f0f52591dba.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                            <img class="kc-style-preview-overlay" data-style="15oz Mug" style="position: absolute; top: 50%; left: 37%; transform: translate(-50%, -50%); width: 55%; height: auto; display: none;">
+                        </div>
+                        <span class="kc-choice-label">15oz Mug</span>
+                    </label>
+                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+                        <input type="checkbox" name="style" value="12oz Wine" onchange="updateStyleSelection()">
+                        <div style="position: relative; margin-bottom: 8px;">
+                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d0b068753a10857d5127.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                            <img class="kc-style-preview-overlay" data-style="12oz Wine" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: auto; display: none;">
+                        </div>
+                        <span class="kc-choice-label">12oz Wine</span>
+                    </label>
+                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+                        <input type="checkbox" name="style" value="20oz Water Bottle" onchange="updateStyleSelection()">
+                        <div style="position: relative; margin-bottom: 8px;">
+                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d0a239b1de07f7e93859.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                            <img class="kc-style-preview-overlay" data-style="20oz Water Bottle" style="position: absolute; top: 60%; left: 55%; transform: translate(-50%, -50%); width: 30%; height: auto; display: none;">
+                        </div>
+                        <span class="kc-choice-label">20oz Water Bottle</span>
+                    </label>
+                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+                        <input type="checkbox" name="style" value="32oz Water Bottle" onchange="updateStyleSelection()">
+                        <div style="position: relative; margin-bottom: 8px;">
+                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d09939b1de95c7e937c8.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                            <img class="kc-style-preview-overlay" data-style="32oz Water Bottle" style="position: absolute; top: 60%; left: 55%; transform: translate(-50%, -50%); width: 30%; height: auto; display: none;">
+                        </div>
+                        <span class="kc-choice-label">32oz Water Bottle</span>
+                    </label>
+                </div>
+                
+                <span class="kc-error" id="styleError">Please select at least one style</span>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(3)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateStep4()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 5: Choose Colors -->
+            <div class="kc-step" id="step5">
+                <h2 class="kc-title">Pick your tumbler colors</h2>
+                <p class="kc-subtitle">Choose 1 to 3 colors</p>
+                
+                <div class="kc-color-swatches" id="colorSwatches">
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Black" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #111111;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="White" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #ffffff; border: 1px solid #e5e7eb;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Navy" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #1e3a8a;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Red" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #dc2626;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Royal" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #2563eb;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Forest" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #14532d;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Maroon" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #7f1d1d;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Purple" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #6b21a8;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Silver" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #d1d5db;"></div>
+                    </label>
+                    <label class="kc-color-swatch">
+                        <input type="checkbox" name="color" value="Gold" onchange="updateColorSelection()">
+                        <div class="kc-color-swatch-inner" style="background: #fbbf24;"></div>
+                    </label>
+                </div>
+                
+                <span class="kc-error" id="colorError">Please select 1 to 3 colors</span>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(4)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateStep5()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 6: Fundraising Goal -->
+            <div class="kc-step" id="step6">
+                <h2 class="kc-title">Set Your Fundraising Goal! 🎯</h2>
+                <p class="kc-subtitle">How many items do you want to sell?</p>
+                
+                <div style="background: linear-gradient(135deg, #f0f9ff, #e0f2fe); padding: 32px; border-radius: 12px; margin-bottom: 24px;">
+                    <div style="text-align: center; margin-bottom: 24px;">
+                        <div style="font-size: 48px; font-weight: bold; color: #1e40af; margin-bottom: 8px;">
+                            <span id="goalNumber">100</span> items
+                        </div>
+                        <div style="font-size: 24px; color: #059669; font-weight: 600;">
+                            = $<span id="earningsAmount">700</span> raised!
+                        </div>
+                        <div style="font-size: 14px; color: #6b7280; margin-top: 8px;">
+                            Your organization earns $7 per item sold
+                        </div>
+                    </div>
+                    
+                    <div class="kc-form-group">
+                        <input type="range" 
+                               id="goalSlider" 
+                               class="kc-goal-slider"
+                               min="25" 
+                               max="500" 
+                               value="100" 
+                               step="25"
+                               oninput="updateGoal(this.value)">
+                        <div style="display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: #9ca3af;">
+                            <span>25</span>
+                            <span>250</span>
+                            <span>500</span>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 24px; padding: 16px; background: white; border-radius: 8px; border-left: 4px solid #10b981;">
+                        <div style="font-size: 14px; color: #374151; margin-bottom: 8px;">
+                            <strong>Popular goals:</strong>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;">
+                            <button onclick="setGoal(50)" style="padding: 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                50 items<br><strong>$350</strong>
+                            </button>
+                            <button onclick="setGoal(100)" style="padding: 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                100 items<br><strong>$700</strong>
+                            </button>
+                            <button onclick="setGoal(200)" style="padding: 8px; background: #f3f4f6; border: 1px solid #e5e7eb; border-radius: 4px; cursor: pointer; font-size: 13px;">
+                                200 items<br><strong>$1,400</strong>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(5)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateStep6()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 7: Additional Designs -->
+            <div class="kc-step" id="step7">
+                <h2 class="kc-title">That was so easy!</h2>
+                <p class="kc-subtitle">We offer up to 3 different designs. Upload additional designs now.</p>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label">Additional Design 1 (optional)</label>
+                    <label class="kc-file-upload">
+                        <input type="file" class="kc-file-input" accept=".png,.jpg,.jpeg,.svg,.pdf" onchange="handleFileUpload(event, 'extra1')">
+                        <svg class="kc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span class="kc-upload-text">Click to upload</span>
+                        <span class="kc-upload-hint">PNG, JPG, SVG, or PDF</span>
+                    </label>
+                </div>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label">Additional Design 2 (optional)</label>
+                    <label class="kc-file-upload">
+                        <input type="file" class="kc-file-input" accept=".png,.jpg,.jpeg,.svg,.pdf" onchange="handleFileUpload(event, 'extra2')">
+                        <svg class="kc-upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <span class="kc-upload-text">Click to upload</span>
+                        <span class="kc-upload-hint">PNG, JPG, SVG, or PDF</span>
+                    </label>
+                </div>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(6)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="goToStep(formData.email ? 8 : 8.5)">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 8.5: Email Gate (if not provided) -->
+            <div class="kc-step" id="step8.5">
+                <h2 class="kc-title">You've done the heavy lifting</h2>
+                <p class="kc-subtitle">Now we need your email.</p>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="emailRequired">Email address*</label>
+                    <input type="email" class="kc-input" id="emailRequired" placeholder="your@email.com" required>
+                    <span class="kc-error" id="emailRequiredError">Email is required</span>
+                </div>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(7)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateEmailGate()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 8: Housekeeping -->
+            <div class="kc-step" id="step8">
+                <h2 class="kc-title">Almost there!</h2>
+                <p class="kc-subtitle">Just a few details to finalize your order</p>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="fullName">Your name*</label>
+                    <input type="text" class="kc-input" id="fullName" required>
+                    <span class="kc-error" id="nameError">Name is required</span>
+                </div>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="orgName">Organization name*</label>
+                    <input type="text" class="kc-input" id="orgName" required>
+                    <span class="kc-error" id="orgError">Organization name is required</span>
+                </div>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="shipAddress">Ship-to address*</label>
+                    <textarea class="kc-textarea" id="shipAddress" required></textarea>
+                    <span class="kc-error" id="shipError">Shipping address is required</span>
+                </div>
+                
+                <div class="kc-checkbox-group">
+                    <input type="checkbox" class="kc-checkbox" id="sameAddress" checked onchange="toggleFundsAddress()">
+                    <label class="kc-checkbox-label" for="sameAddress">Is this the same address the funds will be mailed to?</label>
+                </div>
+                
+                <div class="kc-form-group" id="fundsAddressGroup" style="display: none;">
+                    <label class="kc-label" for="fundsAddress">Funds mailing address*</label>
+                    <textarea class="kc-textarea" id="fundsAddress"></textarea>
+                    <span class="kc-error" id="fundsError">Funds address is required</span>
+                </div>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="payee">Who's getting paid?*</label>
+                    <select class="kc-select" id="payee" required>
+                        <option value="">Select one</option>
+                        <option value="School">School</option>
+                        <option value="Booster Club">Booster Club</option>
+                        <option value="PTA/PTO">PTA/PTO</option>
+                        <option value="Nonprofit">Nonprofit</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span class="kc-error" id="payeeError">Please select who's getting paid</span>
+                </div>
+                
+		<div class="kc-form-group">
+    			<label class="kc-label" for="phone">Phone number*</label>
+    			<input type="tel" class="kc-input" id="phone" placeholder="(555) 123-4567" required>
+   			 <span class="kc-error" id="phoneError">Phone number is required</span>
+		</div>
+
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(formData.email ? 7 : 8.5)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="validateStep8()">Next →</button>
+                </div>
+            </div>
+
+            <!-- Step 9: Final Recap -->
+            <div class="kc-step" id="step9">
+                <h2 class="kc-title">Review your details</h2>
+                <p class="kc-subtitle">Please confirm everything looks correct</p>
+                
+                <div class="kc-recap" id="recapContent">
+                    <!-- Dynamically populated -->
+                </div>
+                
+                <div class="kc-form-group">
+                    <label class="kc-label" for="notes">Anything else we should know?</label>
+                    <textarea class="kc-textarea" id="notes" placeholder="Special requests, timeline, questions..."></textarea>
+                </div>
+                
+                <div class="kc-button-group">
+                    <button class="kc-button kc-button-secondary" onclick="goToStep(8)">← Back</button>
+                    <button class="kc-button kc-button-primary" onclick="submitForm()">Submit Order →</button>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+<div class="kc-step" id="success">
+    <div class="kc-success-message">
+        <div class="kc-success-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <h2 class="kc-title">Success! Your fundraiser is in motion 🎉</h2>
+        <p class="kc-subtitle">We'll be in touch within 24 hours with next steps.</p>
+        
+        <div style="background: #f0fdf4; border-radius: 8px; padding: 20px; margin: 24px 0; text-align: left;">
+            <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 12px; color: #166534;">What happens next:</h3>
+            <ul style="list-style: none; padding: 0; margin: 0;">
+                <li style="padding: 8px 0; display: flex; align-items: flex-start;">
+                    <span style="color: #10b981; margin-right: 8px;">✓</span>
+                    <span>Our team will review your designs and prepare a digital proof</span>
+                </li>
+                <li style="padding: 8px 0; display: flex; align-items: flex-start;">
+                    <span style="color: #10b981; margin-right: 8px;">✓</span>
+                    <span>You'll receive your personalized fundraising materials via email</span>
+                </li>
+                <li style="padding: 8px 0; display: flex; align-items: flex-start;">
+                    <span style="color: #10b981; margin-right: 8px;">✓</span>
+                    <span>Start sharing with your community and watch the orders roll in!</span>
+                </li>
+            </ul>
+        </div>
+        
+        <p style="font-size: 14px; color: #6b7280; margin-bottom: 24px;">
+            Questions? Call us at (555) 123-4567 or email support@kccups.com
+        </p>
+        
+        <button class="kc-button kc-button-primary" style="margin-top: 24px;" onclick="window.location.href='/'">Return to Homepage →</button>
+    </div>
+</div>
+        </div>
+    </div>
+
+<!-- Hidden GHL Form Container -->
+<div id="ghl-form-container" style="display: none;">
+    <iframe
+        src="https://api.leadconnectorhq.com/widget/form/iWBjg1IpOnhMAR8n5HLQ"
+        id="ghl-form-iframe"
+        style="width:0;height:0;border:none;"
+        data-form-id="iWBjg1IpOnhMAR8n5HLQ">
+    </iframe>
+</div>
+
+    <script src="https://link.msgsndr.com/js/form_embed.js" type="text/javascript"></script>
+    <script>
+        // ===== CONFIGURATION OBJECT =====
+        // This is where you set up your endpoints and product-specific settings
+        const CONFIG = {
+            // GHL Webhook endpoint - REPLACE WITH YOUR ACTUAL ENDPOINT
+            submitEndpoint: '', // Not needed - using GHL form directly
+            redirectUrl: '/thank-you',
+            maxColors: 3,
+            maxStyles: 6,
+            
+            // Product-specific preview settings
+            // These control where the design appears on each product type
+            productSettings: {
+                '20oz Tumbler': { scale: 30, top: 45, left: 50 },
+                '30oz Tumbler': { scale: 28, top: 48, left: 50 },
+                '15oz Mug': { scale: 35, top: 50, left: 50 },
+                '12oz Wine': { scale: 32, top: 50, left: 50 },
+                '20oz Water Bottle': { scale: 25, top: 42, left: 50 },
+                '32oz Water Bottle': { scale: 22, top: 45, left: 50 }
+            }
+        };
+
+        // Form data storage
+        let formData = {
+            mascot: null,
+            email: null,
+            design_1_filename: null,
+            extra_design_1_filename: null,
+            extra_design_2_filename: null,
+            styles: [],
+            colors: [],
+            fundraising_goal: 100,
+            projected_earnings: 700,
+            full_name: null,
+            org_name: null,
+            ship_address: null,
+            funds_same_as_ship: true,
+            funds_address: null,
+            payee: null,
+            notes: null,
+            utm: {
+                source: null,
+                medium: null,
+                campaign: null,
+                content: null,
+                term: null
+            }
+        };
+
+        let currentStep = 1;
+        const totalSteps = 9;
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            parseUTMParams();
+            fireEvent('kc_flow_start');
+        });
+
+        // Parse UTM parameters
+        function parseUTMParams() {
+            const params = new URLSearchParams(window.location.search);
+            formData.utm.source = params.get('utm_source');
+            formData.utm.medium = params.get('utm_medium');
+            formData.utm.campaign = params.get('utm_campaign');
+            formData.utm.content = params.get('utm_content');
+            formData.utm.term = params.get('utm_term');
+            
+            // Check for mascot in utm_content
+            if (formData.utm.content && formData.utm.content.includes('mascot_')) {
+                const mascotMatch = formData.utm.content.match(/mascot_(\w+)/);
+                if (mascotMatch) {
+                    const mascot = mascotMatch[1].charAt(0).toUpperCase() + mascotMatch[1].slice(1);
+                    document.getElementById('mascot').value = mascot;
+                    formData.mascot = mascot;
+                }
+            }
+        }
+
+
+
+        // Singularize mascot name
+        function singularizeMascot(mascot) {
+            if (!mascot) return mascot;
+            
+            // Common plural patterns
+            const pluralRules = [
+                { pattern: /ies$/i, replacement: 'y' },      // Huskies -> Husky
+                { pattern: /ves$/i, replacement: 'f' },      // Wolves -> Wolf
+                { pattern: /oes$/i, replacement: 'o' },      // Tornadoes -> Tornado
+                { pattern: /sses$/i, replacement: 'ss' },    // Bosses -> Boss
+                { pattern: /shes$/i, replacement: 'sh' },    // Bushes -> Bush
+                { pattern: /ches$/i, replacement: 'ch' },    // Matches -> Match
+                { pattern: /xes$/i, replacement: 'x' },      // Foxes -> Fox
+                { pattern: /men$/i, replacement: 'man' },    // Sportsmen -> Sportsman
+                { pattern: /s$/i, replacement: '' }          // Lions -> Lion (general case)
+            ];
+            
+            // Special cases
+            const irregulars = {
+                'wolves': 'wolf',
+                'knives': 'knife',
+                'wives': 'wife',
+                'lives': 'life',
+                'calves': 'calf',
+                'shelves': 'shelf',
+                'leaves': 'leaf',
+                'loaves': 'loaf',
+                'thieves': 'thief',
+                'halves': 'half',
+                'elves': 'elf',
+                'geese': 'goose',
+                'feet': 'foot',
+                'teeth': 'tooth',
+                'children': 'child',
+                'oxen': 'ox',
+                'mice': 'mouse',
+                'lice': 'louse',
+                'dice': 'die',
+                'men': 'man',
+                'women': 'woman',
+                'people': 'person'
+            };
+            
+            const lower = mascot.toLowerCase();
+            
+            // Check irregular forms first
+            if (irregulars[lower]) {
+                return irregulars[lower].charAt(0).toUpperCase() + irregulars[lower].slice(1);
+            }
+            
+            // Apply regular plural rules
+            for (const rule of pluralRules) {
+                if (rule.pattern.test(mascot)) {
+                    return mascot.replace(rule.pattern, rule.replacement);
+                }
+            }
+            
+            return mascot;
+        }
+
+        // Navigation
+        function goToStep(step) {
+    // Hide current step
+    if (currentStep === 8.5) {
+        document.getElementById('step8.5').classList.remove('active');
+    } else if (currentStep === 10) {
+        document.getElementById('success').classList.remove('active');
+    } else {
+        document.getElementById('step' + currentStep).classList.remove('active');
+    }
+    
+    // Show new step
+    currentStep = step;
+    let stepElement;
+    
+    if (step === 10) {
+        stepElement = document.getElementById('success');
+    } else if (step === 8.5) {
+        stepElement = document.getElementById('step8.5');
+    } else {
+        stepElement = document.getElementById('step' + step);
+    }
+    
+    if (stepElement) {
+        stepElement.classList.add('active');
+    }
+    
+    // Update progress or hide it for success
+    if (step === 10) {
+        // Hide progress bar on success
+        document.querySelector('.kc-header').style.display = 'none';
+    } else {
+        // Show progress bar if it was hidden
+        document.querySelector('.kc-header').style.display = 'block';
+        updateProgress();
+    }
+    
+    // Fire analytics event
+    fireEvent('kc_step_completed', { 
+        step_number: Math.floor(currentStep), 
+        step_key: getStepKey(currentStep) 
+    });
+    
+    // Custom logic for specific steps
+    if (step === 3) {
+        // Update upload title with singularized mascot if available
+        const uploadTitle = document.getElementById('uploadTitle');
+        if (formData.mascot) {
+            const singularMascot = singularizeMascot(formData.mascot);
+            uploadTitle.textContent = `Hey ${singularMascot}! Upload your design`;
+        } else {
+            uploadTitle.textContent = 'Upload your design';
+        }
+    } else if (step === 9) {
+        generateRecap();
+    }
+
+            }
+        
+
+        function updateProgress() {
+            const actualStep = Math.floor(currentStep);
+            const progressPercent = (actualStep / totalSteps) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+            document.getElementById('progressText').textContent = `Step ${actualStep} of ${totalSteps}`;
+        }
+
+        function getStepKey(step) {
+    const keys = {
+        1: 'decision',
+        2: 'mascot_email',
+        3: 'design_upload',
+        4: 'styles',
+        5: 'colors',
+        6: 'fundraising_goal',
+        7: 'additional_designs',
+        8: 'housekeeping',
+        8.5: 'email_gate',
+        9: 'recap',
+        10: 'success'
+    };
+    return keys[step] || 'unknown';
+}
+
+        // Show booking widget
+        function showBookingWidget() {
+            document.getElementById('bookingWidget').style.display = 'block';
+            fireEvent('kc_booking_widget_shown');
+        }
+
+        // File upload handler with enhanced vector-ready processing
+        function handleFileUpload(event, designType) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File size must be less than 10MB');
+                event.target.value = '';
+                return;
+            }
+            
+            // Store filename
+            if (designType === 'design1') {
+                formData.design_1_filename = file.name;
+                
+                // Process image for vector-ready preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    // Create a processing canvas
+                    const processCanvas = document.createElement('canvas');
+                    const ctx = processCanvas.getContext('2d');
+                    const img = new Image();
+                    
+                    img.onload = function() {
+                        // Set canvas size
+                        processCanvas.width = img.width;
+                        processCanvas.height = img.height;
+                        
+                        // Draw original image
+                        ctx.drawImage(img, 0, 0);
+                        
+                        // Apply vector-ready processing
+                        const imageData = ctx.getImageData(0, 0, processCanvas.width, processCanvas.height);
+                        const data = imageData.data;
+                        
+                        // Convert to high contrast black and white for vector conversion
+                        for (let i = 0; i < data.length; i += 4) {
+                            // Get RGB values
+                            const r = data[i];
+                            const g = data[i + 1];
+                            const b = data[i + 2];
+                            const alpha = data[i + 3];
+                            
+                            // Convert to grayscale
+                            const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+                            
+                            // Apply threshold for vector-ready conversion
+                            // Increase contrast and create clean edges
+                            const threshold = 128;
+                            const contrast = 1.5;
+                            let adjusted = ((gray - 128) * contrast) + 128;
+                            
+                            // Binary conversion for clean vectors
+                            const binary = adjusted > threshold ? 255 : 0;
+                            
+                            // Set RGB to binary value
+                            data[i] = binary;
+                            data[i + 1] = binary;
+                            data[i + 2] = binary;
+                            // Preserve alpha channel
+                            data[i + 3] = alpha;
+                        }
+                        
+                        // Put processed image back
+                        ctx.putImageData(imageData, 0, 0);
+                        
+                        // Get processed image as data URL
+                        const processedDataUrl = processCanvas.toDataURL('image/png');
+                        
+                        // Update main preview with processed image
+                        document.getElementById('designPreview').src = processedDataUrl;
+                        document.getElementById('previewContainer').style.display = 'block';
+                        document.getElementById('fileUploadArea').classList.add('has-file');
+                        
+                        // Update all product style preview overlays with the processed design
+                        const styleOverlays = document.querySelectorAll('.kc-style-preview-overlay');
+                        styleOverlays.forEach(overlay => {
+                            overlay.src = processedDataUrl;
+                            overlay.style.display = 'block';
+                        });
+                        
+                        // Add vector-ready indicator
+                        const caption = document.querySelector('.kc-preview-caption');
+                        if (caption) {
+                            caption.innerHTML = 'Preview shows your artwork as a stainless etch on a 20oz black tumbler.<br><span style="color: #10b981; font-size: 12px;">✓ Design optimized for laser engraving</span>';
+                        }
+                    };
+                    
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            } else if (designType === 'extra1') {
+                formData.extra_design_1_filename = file.name;
+                event.target.parentElement.classList.add('has-file');
+            } else if (designType === 'extra2') {
+                formData.extra_design_2_filename = file.name;
+                event.target.parentElement.classList.add('has-file');
+            }
+        }
+
+        // Style selection
+        function updateStyleSelection() {
+            const checkboxes = document.querySelectorAll('input[name="style"]:checked');
+            formData.styles = Array.from(checkboxes).map(cb => cb.value);
+            
+            // Update visual state
+            document.querySelectorAll('.kc-choice-tile').forEach(tile => {
+                const checkbox = tile.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    tile.classList.add('selected');
+                } else {
+                    tile.classList.remove('selected');
+                }
+            });
+            
+            // Clear error if valid
+            if (formData.styles.length > 0) {
+                document.getElementById('styleError').classList.remove('show');
+            }
+        }
+
+        // Color selection
+        function updateColorSelection() {
+            const checkboxes = document.querySelectorAll('input[name="color"]:checked');
+            formData.colors = Array.from(checkboxes).map(cb => cb.value);
+            
+            // Enforce max 3 colors
+            if (formData.colors.length > CONFIG.maxColors) {
+                const lastChecked = event.target;
+                lastChecked.checked = false;
+                formData.colors = formData.colors.filter(c => c !== lastChecked.value);
+                alert(`You can only select up to ${CONFIG.maxColors} colors`);
+                return;
+            }
+            
+            // Update visual state
+            document.querySelectorAll('.kc-color-swatch').forEach(swatch => {
+                const checkbox = swatch.querySelector('input[type="checkbox"]');
+                if (checkbox && checkbox.checked) {
+                    swatch.classList.add('selected');
+                } else {
+                    swatch.classList.remove('selected');
+                }
+            });
+            
+            // Clear error if valid
+            if (formData.colors.length > 0) {
+                document.getElementById('colorError').classList.remove('show');
+            }
+        }
+
+        // Toggle funds address
+        function toggleFundsAddress() {
+            const sameAddress = document.getElementById('sameAddress').checked;
+            formData.funds_same_as_ship = sameAddress;
+            document.getElementById('fundsAddressGroup').style.display = sameAddress ? 'none' : 'block';
+        }
+
+        // Validation functions
+        function validateStep2() {
+            const mascot = document.getElementById('mascot').value.trim();
+            const email = document.getElementById('emailOptional').value.trim();
+            
+            // Optional fields, but validate email if provided
+            if (email && !isValidEmail(email)) {
+                document.getElementById('emailOptionalError').classList.add('show');
+                return;
+            }
+            
+            formData.mascot = mascot || null;
+            formData.email = email || null;
+            
+            goToStep(3);
+        }
+
+        function validateStep3() {
+            if (!formData.design_1_filename) {
+                alert('Please upload a design');
+                return;
+            }
+            goToStep(4);
+        }
+
+        function validateStep4() {
+            if (formData.styles.length === 0) {
+                document.getElementById('styleError').classList.add('show');
+                return;
+            }
+            goToStep(5);
+        }
+
+        function validateStep5() {
+            if (formData.colors.length === 0 || formData.colors.length > CONFIG.maxColors) {
+                document.getElementById('colorError').classList.add('show');
+                return;
+            }
+            goToStep(6);
+        }
+
+        // Fundraising goal functions
+        function updateGoal(value) {
+            const goal = parseInt(value);
+            const earnings = goal * 7;
+            
+            document.getElementById('goalNumber').textContent = goal;
+            document.getElementById('earningsAmount').textContent = earnings.toLocaleString();
+            
+            formData.fundraising_goal = goal;
+            formData.projected_earnings = earnings;
+        }
+
+        function setGoal(value) {
+            document.getElementById('goalSlider').value = value;
+            updateGoal(value);
+        }
+
+        function validateStep6() {
+            // Goal is always valid (has default value)
+            goToStep(7);
+        }
+
+        function validateEmailGate() {
+            const email = document.getElementById('emailRequired').value.trim();
+            
+            if (!email || !isValidEmail(email)) {
+                document.getElementById('emailRequiredError').classList.add('show');
+                return;
+            }
+            
+            formData.email = email;
+            goToStep(8);
+        }
+
+        function validateStep8() {
+            let isValid = true;
+            
+            // Validate all required fields
+            const fullName = document.getElementById('fullName').value.trim();
+            const orgName = document.getElementById('orgName').value.trim();
+            const shipAddress = document.getElementById('shipAddress').value.trim();
+            const payee = document.getElementById('payee').value;
+            const phone = document.getElementById('phone').value.trim();
+if (!phone) {
+    document.getElementById('phoneError').classList.add('show');
+    isValid = false;
+} else {
+    document.getElementById('phoneError').classList.remove('show');
+    formData.phone = phone;
+}
+
+            if (!fullName) {
+                document.getElementById('nameError').classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('nameError').classList.remove('show');
+            }
+            
+            if (!orgName) {
+                document.getElementById('orgError').classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('orgError').classList.remove('show');
+            }
+            
+            if (!shipAddress) {
+                document.getElementById('shipError').classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('shipError').classList.remove('show');
+            }
+            
+            if (!payee) {
+                document.getElementById('payeeError').classList.add('show');
+                isValid = false;
+            } else {
+                document.getElementById('payeeError').classList.remove('show');
+            }
+            
+            // Check funds address if needed
+            if (!formData.funds_same_as_ship) {
+                const fundsAddress = document.getElementById('fundsAddress').value.trim();
+                if (!fundsAddress) {
+                    document.getElementById('fundsError').classList.add('show');
+                    isValid = false;
+                } else {
+                    document.getElementById('fundsError').classList.remove('show');
+                    formData.funds_address = fundsAddress;
+                }
+            }
+            
+            if (!isValid) return;
+            
+            // Store data
+            formData.full_name = fullName;
+            formData.org_name = orgName;
+            formData.ship_address = shipAddress;
+            formData.payee = payee;
+            
+            goToStep(9);
+        }
+
+        // Generate recap
+        function generateRecap() {
+            const recap = document.getElementById('recapContent');
+            recap.innerHTML = `
+                <h3 class="kc-recap-title">Order Summary</h3>
+                ${formData.mascot ? `
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Mascot:</span>
+                    <span class="kc-recap-value">${formData.mascot}</span>
+                </div>` : ''}
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Email:</span>
+                    <span class="kc-recap-value">${formData.email}</span>
+                </div>
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Main Design:</span>
+                    <span class="kc-recap-value">${formData.design_1_filename}</span>
+                </div>
+                ${formData.extra_design_1_filename ? `
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Additional Design 1:</span>
+                    <span class="kc-recap-value">${formData.extra_design_1_filename}</span>
+                </div>` : ''}
+                ${formData.extra_design_2_filename ? `
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Additional Design 2:</span>
+                    <span class="kc-recap-value">${formData.extra_design_2_filename}</span>
+                </div>` : ''}
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Styles:</span>
+                    <span class="kc-recap-value">${formData.styles.join(', ')}</span>
+                </div>
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Colors:</span>
+                    <span class="kc-recap-value">${formData.colors.join(', ')}</span>
+                </div>
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Fundraising Goal:</span>
+                    <span class="kc-recap-value">${formData.fundraising_goal} items (${formData.projected_earnings})</span>
+                </div>
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Contact:</span>
+                    <span class="kc-recap-value">${formData.full_name}</span>
+                </div>
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Organization:</span>
+                    <span class="kc-recap-value">${formData.org_name}</span>
+                </div>
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Ship To:</span>
+                    <span class="kc-recap-value">${formData.ship_address}</span>
+                </div>
+                ${!formData.funds_same_as_ship ? `
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Funds To:</span>
+                    <span class="kc-recap-value">${formData.funds_address}</span>
+                </div>` : ''}
+                <div class="kc-recap-item">
+                    <span class="kc-recap-label">Payee:</span>
+                    <span class="kc-recap-value">${formData.payee}</span>
+                </div>
+            `;
+        }
+
+async function submitForm() {
+    formData.notes = document.getElementById('notes').value.trim() || null;
+    
+    const submitButton = document.querySelectorAll('.kc-button-primary')[document.querySelectorAll('.kc-button-primary').length - 1];
+    submitButton.textContent = 'Submitting...';
+    submitButton.disabled = true;
+    
+    // Build URL with parameters
+    const params = new URLSearchParams({
+        'full_name': formData.full_name || '',
+        'email': formData.email || '',
+        'phone': formData.phone || '',
+        'mascot': formData.mascot || '',
+        'organization_name': formData.org_name || '',
+        'fundraising_goal': String(formData.fundraising_goal),
+        'projected_earnings': String(formData.projected_earnings),
+        'product_styles': formData.styles.join(', '),
+        'product_colors': formData.colors.join(', '),
+        'shipping_address': formData.ship_address || '',
+        'funds_address': formData.funds_address || formData.ship_address || '',
+        'payee_type': formData.payee || '',
+        'additional_notes': (formData.notes || '') + (formData.design_1_filename ? '\n\nFiles: Main: ' + formData.design_1_filename : '')
+    });
+    
+    // Open form with data in URL
+    window.open('https://api.leadconnectorhq.com/widget/form/iWBjg1IpOnhMAR8n5HLQ?' + params.toString(), '_blank');
+    
+    setTimeout(() => {
+        goToStep(10);
+        fireEvent('kc_submission_success', {
+            email: formData.email,
+            fundraising_goal: formData.fundraising_goal
+        });
+    }, 2000);
+}
+
+// Add this function to compile file information
+function getFilesSummary() {
+    let summary = [];
+    
+    if (formData.design_1_filename) {
+        summary.push(`Main Design: ${formData.design_1_filename}`);
+    }
+    if (formData.extra_design_1_filename) {
+        summary.push(`Additional Design 1: ${formData.extra_design_1_filename}`);
+    }
+    if (formData.extra_design_2_filename) {
+        summary.push(`Additional Design 2: ${formData.extra_design_2_filename}`);
+    }
+    
+    return summary.join(' | ');
+}
+
+// Update your submitForm to include this in the notes field
+// In the params section, modify the additional_notes line:
+
+
+        // Utility functions
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // Analytics
+        function fireEvent(eventName, data = {}) {
+            if (typeof window.dataLayer !== 'undefined') {
+                window.dataLayer.push({
+                    event: eventName,
+                    ...data
+                });
+            }
+            console.log('Event fired:', eventName, data);
+        }
+    </script>
+<script src="https://link.msgsndr.com/js/form_embed.js"></script>
+</body>
+</html>
