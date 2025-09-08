@@ -1658,72 +1658,43 @@ async function submitForm() {
     submitButton.disabled = true;
     
     try {
-        // 1. Send email with design file (this is working)
-        if (formData.design_1_data) {
-            const emailResponse = await fetch('https://kc-cups-form.vercel.app/api/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    from_email: formData.email,
-                    full_name: formData.full_name,
-                    org_name: formData.org_name,
-                    phone: formData.phone,
-                    filename: formData.design_1_filename,
-                    attachment: formData.design_1_data,
-                    styles: formData.styles.join(', '),
-                    colors: formData.colors.join(', '),
-                    goal: formData.fundraising_goal,
-                    shipping_address: formData.ship_address,
-                    funds_address: formData.funds_address || formData.ship_address,
-                    payee: formData.payee,
-                    notes: formData.notes,
-                    mascot: formData.mascot,
-                    projected_earnings: formData.projected_earnings,
-                    extra_file_1: formData.extra_design_1_filename || 'None',
-                    extra_file_2: formData.extra_design_2_filename || 'None'
-                })
-            });
-            
-            if (!emailResponse.ok) {
-                const error = await emailResponse.json();
-                console.error('Email error:', error);
-                throw new Error('Failed to send email');
-            }
-        }
-        
-        // 2. Send to GHL webhook to create contact
-        const webhookUrl = 'https://services.leadconnectorhq.com/hooks/xifZnX9j50tYVbsS4czj/webhook-trigger/ee401316-e912-426c-8927-f9cc2a97e3d4'; // PASTE YOUR WEBHOOK URL HERE
-        
-        const webhookResponse = await fetch(webhookUrl, {
+        // Send email with ALL design files
+        const emailResponse = await fetch('https://kc-cups-form.vercel.app/api/send-email', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
+                from_email: formData.email,
                 full_name: formData.full_name,
-                email: formData.email,
+                org_name: formData.org_name,
                 phone: formData.phone,
-                mascot: formData.mascot || '',
-                organization_name: formData.org_name,
-                fundraising_goal: formData.fundraising_goal,
-                projected_earnings: formData.projected_earnings,
-                product_styles: formData.styles.join(', '),
-                product_colors: formData.colors.join(', '),
+                filename: formData.design_1_filename,
+                attachment: formData.design_1_data,
+                extra_filename_1: formData.extra_design_1_filename,
+                extra_attachment_1: formData.extra_design_1_data,
+                extra_filename_2: formData.extra_design_2_filename,
+                extra_attachment_2: formData.extra_design_2_data,
+                styles: formData.styles.join(', '),
+                colors: formData.colors.join(', '),
+                goal: formData.fundraising_goal,
                 shipping_address: formData.ship_address,
                 funds_address: formData.funds_address || formData.ship_address,
-                payee_type: formData.payee,
-                additional_notes: formData.notes || '',
-                design_files: `Main: ${formData.design_1_filename || 'None'}, Extra 1: ${formData.extra_design_1_filename || 'None'}, Extra 2: ${formData.extra_design_2_filename || 'None'}`
+                payee: formData.payee,
+                notes: formData.notes,
+                mascot: formData.mascot,
+                projected_earnings: formData.projected_earnings
             })
         });
         
-        if (!webhookResponse.ok) {
-            console.error('Webhook failed but email was sent');
+        if (!emailResponse.ok) {
+            throw new Error('Failed to send email');
         }
         
-        // Show success
+        // Send to GHL webhook (once you have the URL)
+        // const webhookUrl = 'YOUR_WEBHOOK_URL';
+        // await fetch(webhookUrl, { ... });
+        
         goToStep(10);
         fireEvent('kc_submission_success', {
             email: formData.email,
@@ -1732,7 +1703,7 @@ async function submitForm() {
         
     } catch (error) {
         console.error('Submission error:', error);
-        alert('There was an error submitting your form. Please try again or contact support@kccups.com');
+        alert('There was an error. Please contact support@kccups.com');
         submitButton.textContent = originalText;
         submitButton.disabled = false;
     }
