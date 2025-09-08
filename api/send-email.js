@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 export default async function handler(req, res) {
-    // Security headers
+    // Enable CORS
     res.setHeader('Access-Control-Allow-Origin', process.env.ALLOWED_ORIGIN || '*');
     res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
@@ -12,12 +12,6 @@ export default async function handler(req, res) {
     
     if (req.method !== 'POST') {
         return res.status(405).json({ error: 'Method not allowed' });
-    }
-    
-    // Verify request has required fields
-    const { from_email, full_name } = req.body;
-    if (!from_email || !full_name) {
-        return res.status(400).json({ error: 'Missing required fields' });
     }
     
     const transporter = nodemailer.createTransport({
@@ -32,18 +26,67 @@ export default async function handler(req, res) {
     
     try {
         const { 
+            from_email, 
+            full_name, 
             org_name, 
             phone, 
             filename, 
-            attachment, 
+            attachment,
+            extra_attachment_1,
+            extra_filename_1,
+            extra_attachment_2,
+            extra_filename_2,
             styles, 
             colors, 
-            goal 
+            goal,
+            shipping_address,
+            funds_address,
+            payee,
+            notes,
+            mascot,
+            projected_earnings
         } = req.body;
         
-        let base64Data = null;
-        if (attachment && attachment.includes(',')) {
-            base64Data = attachment.split(',')[1];
+        // Build attachments array
+        const attachments = [];
+        
+        // Main design
+        if (attachment && filename) {
+            let base64Data = attachment;
+            if (attachment.includes(',')) {
+                base64Data = attachment.split(',')[1];
+            }
+            attachments.push({
+                filename: filename,
+                content: base64Data,
+                encoding: 'base64'
+            });
+        }
+        
+        // Extra design 1
+        if (extra_attachment_1 && extra_filename_1) {
+            let base64Data = extra_attachment_1;
+            if (extra_attachment_1.includes(',')) {
+                base64Data = extra_attachment_1.split(',')[1];
+            }
+            attachments.push({
+                filename: extra_filename_1,
+                content: base64Data,
+                encoding: 'base64'
+            });
+        }
+        
+        // Extra design 2
+        if (extra_attachment_2 && extra_filename_2) {
+            let base64Data = extra_attachment_2;
+            if (extra_attachment_2.includes(',')) {
+                base64Data = extra_attachment_2.split(',')[1];
+            }
+            attachments.push({
+                filename: extra_filename_2,
+                content: base64Data,
+                encoding: 'base64'
+            });
         }
         
         const mailOptions = {
@@ -53,25 +96,63 @@ export default async function handler(req, res) {
             subject: `New Design: ${full_name} - ${org_name || 'No Org'}`,
             html: `
                 <h2>New Fundraiser Submission</h2>
-                <p><strong>Name:</strong> ${full_name}</p>
-                <p><strong>Email:</strong> ${from_email}</p>
-                <p><strong>Phone:</strong> ${phone || 'Not provided'}</p>
-                <p><strong>Organization:</strong> ${org_name || 'Not provided'}</p>
-                <hr>
-                <p><strong>Products:</strong> ${styles || 'Not selected'}</p>
-                <p><strong>Colors:</strong> ${colors || 'Not selected'}</p>
-                <p><strong>Goal:</strong> ${goal || 'Not set'} items</p>
-                ${filename ? `<p><strong>File:</strong> ${filename}</p>` : ''}
-            `
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Name:</strong></td>
+                        <td style="padding: 10px;">${full_name}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>Email:</strong></td>
+                        <td style="padding: 10px;">${from_email}</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Phone:</strong></td>
+                        <td style="padding: 10px;">${phone || 'Not provided'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>Organization:</strong></td>
+                        <td style="padding: 10px;">${org_name || 'Not provided'}</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Mascot:</strong></td>
+                        <td style="padding: 10px;">${mascot || 'Not provided'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>Products:</strong></td>
+                        <td style="padding: 10px;">${styles || 'Not selected'}</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Colors:</strong></td>
+                        <td style="padding: 10px;">${colors || 'Not selected'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>Goal:</strong></td>
+                        <td style="padding: 10px;">${goal || 0} items = $${projected_earnings || 0}</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Ship To:</strong></td>
+                        <td style="padding: 10px;">${shipping_address || 'Not provided'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>Funds To:</strong></td>
+                        <td style="padding: 10px;">${funds_address || shipping_address || 'Not provided'}</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Payee:</strong></td>
+                        <td style="padding: 10px;">${payee || 'Not specified'}</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px;"><strong>Notes:</strong></td>
+                        <td style="padding: 10px;">${notes || 'None'}</td>
+                    </tr>
+                    <tr style="background: #f5f5f5;">
+                        <td style="padding: 10px;"><strong>Files Attached:</strong></td>
+                        <td style="padding: 10px;">${attachments.length} design file(s)</td>
+                    </tr>
+                </table>
+            `,
+            attachments: attachments
         };
-        
-        if (base64Data && filename) {
-            mailOptions.attachments = [{
-                filename: filename,
-                content: base64Data,
-                encoding: 'base64'
-            }];
-        }
         
         await transporter.sendMail(mailOptions);
         res.status(200).json({ success: true });
