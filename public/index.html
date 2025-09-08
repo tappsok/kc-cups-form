@@ -1692,8 +1692,35 @@ async function submitForm() {
         }
         
         // Send to GHL webhook (once you have the URL)
-        // const webhookUrl = 'YOUR_WEBHOOK_URL';
-        // await fetch(webhookUrl, { ... });
+        // Send to GHL webhook to create contact
+const webhookUrl = 'https://services.leadconnectorhq.com/hooks/xifZnX9j50tYVbsS4czj/webhook-trigger/ee401316-e912-426c-8927-f9cc2a97e3d4'; // Get this from GHL
+        
+const webhookResponse = await fetch(webhookUrl, {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+        full_name: formData.full_name,
+        email: formData.email,
+        phone: formData.phone,
+        mascot: formData.mascot || '',
+        organization_name: formData.org_name,
+        fundraising_goal: formData.fundraising_goal,
+        projected_earnings: formData.projected_earnings,
+        product_styles: formData.styles.join(', '),
+        product_colors: formData.colors.join(', '),
+        shipping_address: formData.ship_address,
+        funds_address: formData.funds_address || formData.ship_address,
+        payee_type: formData.payee,
+        additional_notes: formData.notes || '',
+        design_files: `Main: ${formData.design_1_filename || 'None'}, Extra 1: ${formData.extra_design_1_filename || 'None'}, Extra 2: ${formData.extra_design_2_filename || 'None'}`
+    })
+});
+
+if (!webhookResponse.ok) {
+    console.error('Webhook failed but email was sent');
+}
         
         goToStep(10);
         fireEvent('kc_submission_success', {
