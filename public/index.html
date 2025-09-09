@@ -229,12 +229,19 @@
             opacity: 0.95;
         }
 
-        .kc-style-preview-overlay {
-            /* Enhanced stainless steel effect for product previews */
-            filter: brightness(3) contrast(2) invert(1) drop-shadow(0 1px 1px rgba(255,255,255,0.6));
-            mix-blend-mode: screen;
-            opacity: 0.9;
-        }
+        .kc-preview-overlay {
+    position: absolute;
+    top: 45%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 25%;  /* Reduced from 18% to better fit most designs */
+    max-width: 80px;  /* Reduced from 120px for better proportion */
+    height: auto;
+    /* Enhanced stainless steel etching effect */
+    filter: brightness(3) contrast(2) invert(1) drop-shadow(0 1px 2px rgba(255,255,255,0.8));
+    mix-blend-mode: screen;
+    opacity: 0.95;
+}
 
         .kc-goal-slider {
             -webkit-appearance: none;
@@ -1356,11 +1363,33 @@ function handleFileUpload(event, designType) {
                 const img = new Image();
                 
                 img.onload = function() {
-                    processCanvas.width = img.width;
-                    processCanvas.height = img.height;
-                    ctx.drawImage(img, 0, 0);
+                    // STANDARDIZE IMAGE SIZE FOR PREVIEW
+                    // Set a maximum size for the processed image
+                    const MAX_WIDTH = 800;
+                    const MAX_HEIGHT = 800;
                     
-                    const imageData = ctx.getImageData(0, 0, processCanvas.width, processCanvas.height);
+                    let width = img.width;
+                    let height = img.height;
+                    
+                    // Calculate the scaling factor to fit within max dimensions
+                    if (width > MAX_WIDTH || height > MAX_HEIGHT) {
+                        const widthRatio = MAX_WIDTH / width;
+                        const heightRatio = MAX_HEIGHT / height;
+                        const scale = Math.min(widthRatio, heightRatio);
+                        
+                        width = Math.floor(width * scale);
+                        height = Math.floor(height * scale);
+                    }
+                    
+                    // Set canvas to the standardized size
+                    processCanvas.width = width;
+                    processCanvas.height = height;
+                    
+                    // Draw the image at the standardized size
+                    ctx.drawImage(img, 0, 0, width, height);
+                    
+                    // Apply vector-ready processing
+                    const imageData = ctx.getImageData(0, 0, width, height);
                     const data = imageData.data;
                     
                     for (let i = 0; i < data.length; i += 4) {
