@@ -229,6 +229,12 @@
     opacity: 0.8;
 }
 
+		.kc-style-preview-overlay {
+    filter: brightness(1.5) contrast(1.2);
+    mix-blend-mode: screen;
+    opacity: 0.8;
+}
+		
         .kc-goal-slider {
             -webkit-appearance: none;
             width: 100%;
@@ -654,69 +660,69 @@
                 </div>
             </div>
 
-            <!-- Step 4: Choose Product Styles -->
-            <div class="kc-step" id="step4">
-                <h2 class="kc-title">Choose your product style(s)</h2>
-                <p class="kc-subtitle">Select at least one style (up to 6)</p>
-                
-                <div class="kc-choice-grid" id="styleGrid">
-                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
-                        <input type="checkbox" name="style" value="20oz Tumbler" onchange="updateStyleSelection()">
-                        <div style="position: relative; margin-bottom: 8px;">
-                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7c3a976561e36481a2d14.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
-                            <img class="kc-style-preview-overlay" data-style="20oz Tumbler" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 35%; height: auto; display: none;">
-                        </div>
-                        <span class="kc-choice-label">20oz Tumbler</span>
-                    </label>
-                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
-                        <input type="checkbox" name="style" value="30oz Tumbler" onchange="updateStyleSelection()">
-                        <div style="position: relative; margin-bottom: 8px;">
-                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d08c6b3e00660b1b8591.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
-                            <img class="kc-style-preview-overlay" data-style="30oz Tumbler" style="position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 35%; height: auto; display: none;">
-                        </div>
-                        <span class="kc-choice-label">30oz Tumbler</span>
-                    </label>
-                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
-                        <input type="checkbox" name="style" value="15oz Mug" onchange="updateStyleSelection()">
-                        <div style="position: relative; margin-bottom: 8px;">
-                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68ba54c762a05f0f52591dba.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
-                            <img class="kc-style-preview-overlay" data-style="15oz Mug" style="position: absolute; top: 50%; left: 37%; transform: translate(-50%, -50%); width: 55%; height: auto; display: none;">
-                        </div>
-                        <span class="kc-choice-label">15oz Mug</span>
-                    </label>
-                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
-                        <input type="checkbox" name="style" value="12oz Wine" onchange="updateStyleSelection()">
-                        <div style="position: relative; margin-bottom: 8px;">
-                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d0b068753a10857d5127.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
-                            <img class="kc-style-preview-overlay" data-style="12oz Wine" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 60%; height: auto; display: none;">
-                        </div>
-                        <span class="kc-choice-label">12oz Wine</span>
-                    </label>
-                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
-                        <input type="checkbox" name="style" value="20oz Water Bottle" onchange="updateStyleSelection()">
-                        <div style="position: relative; margin-bottom: 8px;">
-                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d0a239b1de07f7e93859.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
-                            <img class="kc-style-preview-overlay" data-style="20oz Water Bottle" style="position: absolute; top: 60%; left: 55%; transform: translate(-50%, -50%); width: 30%; height: auto; display: none;">
-                        </div>
-                        <span class="kc-choice-label">20oz Water Bottle</span>
-                    </label>
-                    <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
-                        <input type="checkbox" name="style" value="32oz Water Bottle" onchange="updateStyleSelection()">
-                        <div style="position: relative; margin-bottom: 8px;">
-                            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d09939b1de95c7e937c8.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
-                            <img class="kc-style-preview-overlay" data-style="32oz Water Bottle" style="position: absolute; top: 60%; left: 55%; transform: translate(-50%, -50%); width: 30%; height: auto; display: none;">
-                        </div>
-                        <span class="kc-choice-label">32oz Water Bottle</span>
-                    </label>
-                </div>
-                
-                <span class="kc-error" id="styleError">Please select at least one style</span>
-                
-                <div class="kc-button-group">
-                    <button class="kc-button kc-button-secondary" onclick="goToStep(3)">← Back</button>
-                    <button class="kc-button kc-button-primary" onclick="validateStep4()">Next →</button>
-                </div>
+           <!-- Step 4: Choose Product Styles -->
+<div class="kc-step" id="step4">
+    <h2 class="kc-title">Choose your product style(s)</h2>
+    <p class="kc-subtitle">Select at least one style (up to 6)</p>
+    
+    <div class="kc-choice-grid" id="styleGrid">
+        <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+            <input type="checkbox" name="style" value="20oz Tumbler" onchange="updateStyleSelection()">
+            <div style="position: relative; margin-bottom: 8px;">
+                <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7c3a976561e36481a2d14.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                <img class="kc-style-preview-overlay" data-style="20oz Tumbler" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 12%; max-width: 45px; height: auto; display: none;">
             </div>
+            <span class="kc-choice-label">20oz Tumbler</span>
+        </label>
+        <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+            <input type="checkbox" name="style" value="30oz Tumbler" onchange="updateStyleSelection()">
+            <div style="position: relative; margin-bottom: 8px;">
+                <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d08c6b3e00660b1b8591.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                <img class="kc-style-preview-overlay" data-style="30oz Tumbler" style="position: absolute; top: 38%; left: 50%; transform: translate(-50%, -50%); width: 12%; max-width: 45px; height: auto; display: none;">
+            </div>
+            <span class="kc-choice-label">30oz Tumbler</span>
+        </label>
+        <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+            <input type="checkbox" name="style" value="15oz Mug" onchange="updateStyleSelection()">
+            <div style="position: relative; margin-bottom: 8px;">
+                <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68ba54c762a05f0f52591dba.jpeg" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                <img class="kc-style-preview-overlay" data-style="15oz Mug" style="position: absolute; top: 50%; left: 37%; transform: translate(-50%, -50%); width: 12%; max-width: 45px; height: auto; display: none;">
+            </div>
+            <span class="kc-choice-label">15oz Mug</span>
+        </label>
+        <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+            <input type="checkbox" name="style" value="12oz Wine" onchange="updateStyleSelection()">
+            <div style="position: relative; margin-bottom: 8px;">
+                <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d0b068753a10857d5127.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                <img class="kc-style-preview-overlay" data-style="12oz Wine" style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 12%; max-width: 45px; height: auto; display: none;">
+            </div>
+            <span class="kc-choice-label">12oz Wine</span>
+        </label>
+        <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+            <input type="checkbox" name="style" value="20oz Water Bottle" onchange="updateStyleSelection()">
+            <div style="position: relative; margin-bottom: 8px;">
+                <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d0a239b1de07f7e93859.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                <img class="kc-style-preview-overlay" data-style="20oz Water Bottle" style="position: absolute; top: 60%; left: 55%; transform: translate(-50%, -50%); width: 12%; max-width: 45px; height: auto; display: none;">
+            </div>
+            <span class="kc-choice-label">20oz Water Bottle</span>
+        </label>
+        <label class="kc-choice-tile" style="height: auto; padding-bottom: 8px;">
+            <input type="checkbox" name="style" value="32oz Water Bottle" onchange="updateStyleSelection()">
+            <div style="position: relative; margin-bottom: 8px;">
+                <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7d09939b1de95c7e937c8.png" style="width: 100%; height: 120px; object-fit: contain; border-radius: 4px;">
+                <img class="kc-style-preview-overlay" data-style="32oz Water Bottle" style="position: absolute; top: 60%; left: 55%; transform: translate(-50%, -50%); width: 12%; max-width: 45px; height: auto; display: none;">
+            </div>
+            <span class="kc-choice-label">32oz Water Bottle</span>
+        </label>
+    </div>
+    
+    <span class="kc-error" id="styleError">Please select at least one style</span>
+    
+    <div class="kc-button-group">
+        <button class="kc-button kc-button-secondary" onclick="goToStep(3)">← Back</button>
+        <button class="kc-button kc-button-primary" onclick="validateStep4()">Next →</button>
+    </div>
+</div>
 
             <!-- Step 5: Choose Colors -->
             <div class="kc-step" id="step5">
