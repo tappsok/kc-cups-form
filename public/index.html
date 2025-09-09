@@ -220,8 +220,8 @@
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 15%;  /* Further reduced for better proportion */
-    max-width: 60px;  /* Further reduced */
+    width: 12%;  /* Further reduced from 15% */
+    max-width: 45px;  /* Further reduced from 60px */
     height: auto;
     /* Simplified filter for better etching effect */
     filter: brightness(1.5) contrast(1.2);
@@ -1349,9 +1349,9 @@ function handleFileUpload(event, designType) {
                 const img = new Image();
                 
                 img.onload = function() {
-                    // STANDARDIZE IMAGE SIZE FOR PREVIEW
-                    const MAX_WIDTH = 400;  // Reduced from 800
-                    const MAX_HEIGHT = 400; // Reduced from 800
+                    // FURTHER REDUCE IMAGE SIZE FOR PREVIEW
+                    const MAX_WIDTH = 250;  // Reduced from 400
+                    const MAX_HEIGHT = 250; // Reduced from 400
                     
                     let width = img.width;
                     let height = img.height;
@@ -1387,7 +1387,7 @@ function handleFileUpload(event, designType) {
                         const gray = 0.299 * r + 0.587 * g + 0.114 * b;
                         
                         // Apply threshold - this determines what becomes etched
-                        const threshold = 200; // Increased threshold for better selection
+                        const threshold = 200;
                         
                         if (gray > threshold || alpha < 128) {
                             // Light areas or transparent areas - make fully transparent
@@ -1425,7 +1425,6 @@ function handleFileUpload(event, designType) {
                 
                 img.src = e.target.result;
             } else {
-                // For PDF/SVG files handling remains the same
                 document.getElementById('previewContainer').innerHTML = `
                     <div style="padding: 20px; background: #f0f9ff; border-radius: 8px;">
                         <p>📎 File uploaded: <strong>${file.name}</strong></p>
