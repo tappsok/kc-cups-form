@@ -1354,30 +1354,19 @@ function handleFileUpload(event, designType) {
                 const ctx = processCanvas.getContext('2d');
                 const img = new Image();
                 
-             img.onload = function() {
-    // Force ALL images to exact same output
+            img.onload = function() {
+    // Fixed canvas size that will be used for ALL images
     const CANVAS_SIZE = 250;
-    const DESIGN_SIZE = 100; // Fixed size for ALL designs on preview
     
     processCanvas.width = CANVAS_SIZE;
     processCanvas.height = CANVAS_SIZE;
     
-    // Clear canvas
+    // Clear canvas with transparent background
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     
-    // Force image to fit EXACTLY in a square, ignoring aspect ratio
-    // This ensures all images appear the same size
-    const centerX = CANVAS_SIZE / 2;
-    const centerY = CANVAS_SIZE / 2;
-    const halfSize = DESIGN_SIZE / 2;
-    
-    // Draw image stretched/compressed to exact square size
-    ctx.drawImage(img, 
-        centerX - halfSize,  // x position
-        centerY - halfSize,  // y position
-        DESIGN_SIZE,         // force to exact width
-        DESIGN_SIZE          // force to exact height
-    );
+    // Force ALL images to fill the ENTIRE canvas
+    // This ensures maximum size and consistency
+    ctx.drawImage(img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
     
     // Apply processing for etching effect
     const imageData = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
