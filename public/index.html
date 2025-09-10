@@ -1354,60 +1354,46 @@ function handleFileUpload(event, designType) {
                 const ctx = processCanvas.getContext('2d');
                 const img = new Image();
                 
-               img.onload = function() {
-    // ALWAYS resize to EXACT standard size for consistency
-    const STANDARD_SIZE = 250;
-    const OUTPUT_SIZE = 200; // Fixed output size for ALL images
-
-    // First, create a temporary canvas to normalize the image
-    const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
+             img.onload = function() {
+    // Force ALL images to exact same output
+    const CANVAS_SIZE = 250;
+    const DESIGN_SIZE = 100; // Fixed size for ALL designs on preview
     
-    // Set temp canvas to a fixed square size
-    tempCanvas.width = OUTPUT_SIZE;
-    tempCanvas.height = OUTPUT_SIZE;
+    processCanvas.width = CANVAS_SIZE;
+    processCanvas.height = CANVAS_SIZE;
     
-    // Clear the canvas
-    tempCtx.fillStyle = 'white';
-    tempCtx.fillRect(0, 0, OUTPUT_SIZE, OUTPUT_SIZE);
+    // Clear canvas
+    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     
-    // Calculate scale to fit image in square (with padding)
-    const padding = 20;
-    const maxSize = OUTPUT_SIZE - (padding * 2);
-    const scale = Math.min(maxSize / img.width, maxSize / img.height);
+    // Force image to fit EXACTLY in a square, ignoring aspect ratio
+    // This ensures all images appear the same size
+    const centerX = CANVAS_SIZE / 2;
+    const centerY = CANVAS_SIZE / 2;
+    const halfSize = DESIGN_SIZE / 2;
     
-    // Calculate new dimensions
-    const newWidth = img.width * scale;
-    const newHeight = img.height * scale;
-    
-    // Center the image
-    const x = (OUTPUT_SIZE - newWidth) / 2;
-    const y = (OUTPUT_SIZE - newHeight) / 2;
-    
-    // Draw the image at fixed size
-    tempCtx.drawImage(img, x, y, newWidth, newHeight);
-    
-    // Now process this normalized image
-    processCanvas.width = STANDARD_SIZE;
-    processCanvas.height = STANDARD_SIZE;
-    
-    // Draw the normalized image to process canvas at standard size
-    ctx.drawImage(tempCanvas, 0, 0, OUTPUT_SIZE, OUTPUT_SIZE, 0, 0, STANDARD_SIZE, STANDARD_SIZE);
+    // Draw image stretched/compressed to exact square size
+    ctx.drawImage(img, 
+        centerX - halfSize,  // x position
+        centerY - halfSize,  // y position
+        DESIGN_SIZE,         // force to exact width
+        DESIGN_SIZE          // force to exact height
+    );
     
     // Apply processing for etching effect
-    const imageData = ctx.getImageData(0, 0, STANDARD_SIZE, STANDARD_SIZE);
+    const imageData = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     const data = imageData.data;
     
     for (let i = 0; i < data.length; i += 4) {
         const r = data[i];
         const g = data[i + 1];
         const b = data[i + 2];
+        const alpha = data[i + 3];
         
         // Convert to grayscale
         const gray = 0.299 * r + 0.587 * g + 0.114 * b;
         
         // Simple threshold
-        if (gray < 180) {
+        if (gray < 180 && alpha > 50) {
             // Dark pixels become white (etched)
             data[i] = 255;
             data[i + 1] = 255;
