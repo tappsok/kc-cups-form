@@ -1358,9 +1358,13 @@ function handleFileUpload(event, designType) {
             const fileType = file.type.toLowerCase();
             
             if (fileType === 'application/pdf') {
-                handlePDFWithPDFjs(e.target.result);
-            } else if (fileType === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
-                handleSVGConversion(e.target.result);
+    // Show placeholder immediately for better UX
+    showPDFPlaceholder(file.name);
+    // Then attempt to process (if it works, it will override the placeholder)
+    handlePDFWithPDFjs(e.target.result);
+} else if (fileType === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+    handleSVGConversion(e.target.result);
+}
             } else if (fileType.startsWith('image/')) {
                 handleRasterImage(e.target.result);
             } else {
@@ -1389,6 +1393,7 @@ function handleFileUpload(event, designType) {
 
 // Handle PDF files using PDF.js
 async function handlePDFWithPDFjs(pdfData) {
+    console.log('Starting PDF processing...');
     try {
         // Remove data URL prefix to get base64
         const base64 = pdfData.split(',')[1];
@@ -1398,32 +1403,45 @@ async function handlePDFWithPDFjs(pdfData) {
             bytes[i] = pdfBytes.charCodeAt(i);
         }
         
+        console.log('PDF bytes prepared, loading document...');
+        
         // Load PDF with PDF.js
         const loadingTask = pdfjsLib.getDocument({data: bytes});
         const pdf = await loadingTask.promise;
         
+        console.log('PDF loaded, getting page...');
+        
         // Get first page
         const page = await pdf.getPage(1);
         
-        // Set up canvas
-        const viewport = page.getViewport({scale: 2}); // Higher scale for better quality
+        // Set up canvas with a specific size
+        const scale = 2;
+        const viewport = page.getViewport({scale: scale});
         const canvas = document.createElement('canvas');
         const context = canvas.getContext('2d');
         canvas.width = viewport.width;
         canvas.height = viewport.height;
         
+        console.log('Rendering PDF to canvas...');
+        
         // Render PDF page to canvas
-        await page.render({
+        const renderContext = {
             canvasContext: context,
             viewport: viewport
-        }).promise;
+        };
+        
+        await page.render(renderContext).promise;
+        
+        console.log('PDF rendered, applying engraving effect...');
         
         // Process the rendered image for engraving effect
         processCanvasForEngraving(canvas);
         
     } catch (error) {
         console.error('PDF processing error:', error);
-        // Fallback to simple preview
+        console.error('Error details:', error.message);
+        
+        // Always show the placeholder for PDFs since preview failed
         showPDFPlaceholder(formData.design_1_filename);
     }
 }
@@ -1611,7 +1629,7 @@ function displayEngravingPreview(processedDataUrl) {
     }
 }
 
-// Show PDF placeholder when PDF.js fails
+// Show PDF placeholder when PDF.js fails or for immediate feedback
 function showPDFPlaceholder(filename) {
     const previewContainer = document.getElementById('previewContainer');
     previewContainer.innerHTML = `
@@ -1636,6 +1654,12 @@ function showPDFPlaceholder(filename) {
     `;
     previewContainer.style.display = 'block';
     document.getElementById('fileUploadArea').classList.add('has-file');
+    
+    // Hide style preview overlays for PDFs
+    const styleOverlays = document.querySelectorAll('.kc-style-preview-overlay');
+    styleOverlays.forEach(overlay => {
+        overlay.style.display = 'none';
+    });
 }
 
 // Show upload confirmation for files that can't be previewed
