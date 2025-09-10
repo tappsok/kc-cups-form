@@ -220,9 +220,9 @@
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 15%;  /* Use percentage relative to tumbler container */
-    max-width: 35px;  /* Cap the maximum size */
-    height: auto; /* Maintain aspect ratio */
+    width: 70px;  /* Fixed width - about 23% of 300px container */
+    height: 60px; /* Fixed height to maintain your print proportions */
+    object-fit: contain; /* Ensures image fits within bounds without distortion */
     filter: brightness(1.5) contrast(1.2);
     mix-blend-mode: screen;
     opacity: 0.8;
@@ -1354,20 +1354,28 @@ function handleFileUpload(event, designType) {
                 const img = new Image();
                 
            img.onload = function() {
-    // Fixed canvas size - all images process to this exact size
+    // Fixed canvas size for consistent output
     const CANVAS_SIZE = 250;
     
     processCanvas.width = CANVAS_SIZE;
     processCanvas.height = CANVAS_SIZE;
     
-    // Clear canvas
-    ctx.fillStyle = 'transparent';
+    // Clear canvas with transparent background
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     
-    // Draw image to fill entire canvas (will stretch if needed)
-    ctx.drawImage(img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
+    // Calculate scale to fit image within canvas while maintaining aspect ratio
+    const scale = Math.min(CANVAS_SIZE / img.width, CANVAS_SIZE / img.height);
+    const scaledWidth = img.width * scale;
+    const scaledHeight = img.height * scale;
     
-    // Apply processing for etching effect
+    // Center the scaled image
+    const x = (CANVAS_SIZE - scaledWidth) / 2;
+    const y = (CANVAS_SIZE - scaledHeight) / 2;
+    
+    // Draw image at calculated position and size
+    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+    
+    // Rest of your processing code remains the same...
     const imageData = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     const data = imageData.data;
     
@@ -1395,7 +1403,7 @@ function handleFileUpload(event, designType) {
     ctx.putImageData(imageData, 0, 0);
     const processedDataUrl = processCanvas.toDataURL('image/png');
     
-    // Rest remains the same...
+    // Continue with rest of code...
     document.getElementById('designPreview').src = processedDataUrl;
     document.getElementById('previewContainer').style.display = 'block';
     document.getElementById('fileUploadArea').classList.add('has-file');
