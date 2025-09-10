@@ -220,10 +220,8 @@
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 12%;  /* Further reduced from 15% */
-    max-width: 45px;  /* Further reduced from 60px */
-    height: auto;
-    /* Simplified filter for better etching effect */
+    width: 100px;  /* Fixed pixel width instead of percentage */
+    height: 100px; /* Fixed pixel height to ensure square */
     filter: brightness(1.5) contrast(1.2);
     mix-blend-mode: screen;
     opacity: 0.8;
@@ -1354,18 +1352,18 @@ function handleFileUpload(event, designType) {
                 const ctx = processCanvas.getContext('2d');
                 const img = new Image();
                 
-            img.onload = function() {
-    // Fixed canvas size that will be used for ALL images
+           img.onload = function() {
+    // Fixed canvas size - all images process to this exact size
     const CANVAS_SIZE = 250;
     
     processCanvas.width = CANVAS_SIZE;
     processCanvas.height = CANVAS_SIZE;
     
-    // Clear canvas with transparent background
+    // Clear canvas
+    ctx.fillStyle = 'transparent';
     ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
     
-    // Force ALL images to fill the ENTIRE canvas
-    // This ensures maximum size and consistency
+    // Draw image to fill entire canvas (will stretch if needed)
     ctx.drawImage(img, 0, 0, CANVAS_SIZE, CANVAS_SIZE);
     
     // Apply processing for etching effect
@@ -1378,18 +1376,14 @@ function handleFileUpload(event, designType) {
         const b = data[i + 2];
         const alpha = data[i + 3];
         
-        // Convert to grayscale
         const gray = 0.299 * r + 0.587 * g + 0.114 * b;
         
-        // Simple threshold
         if (gray < 180 && alpha > 50) {
-            // Dark pixels become white (etched)
             data[i] = 255;
             data[i + 1] = 255;
             data[i + 2] = 255;
             data[i + 3] = 255;
         } else {
-            // Light pixels become transparent
             data[i] = 0;
             data[i + 1] = 0;
             data[i + 2] = 0;
@@ -1400,7 +1394,7 @@ function handleFileUpload(event, designType) {
     ctx.putImageData(imageData, 0, 0);
     const processedDataUrl = processCanvas.toDataURL('image/png');
     
-    // Rest of your code remains the same...
+    // Rest remains the same...
     document.getElementById('designPreview').src = processedDataUrl;
     document.getElementById('previewContainer').style.display = 'block';
     document.getElementById('fileUploadArea').classList.add('has-file');
