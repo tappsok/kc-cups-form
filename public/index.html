@@ -1364,7 +1364,6 @@ function handleFileUpload(event, designType) {
     handlePDFWithPDFjs(e.target.result);
 } else if (fileType === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
     handleSVGConversion(e.target.result);
-}
             } else if (fileType.startsWith('image/')) {
                 handleRasterImage(e.target.result);
             } else {
