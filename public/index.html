@@ -215,13 +215,13 @@
             display: block;
         }
 
-       .kc-preview-overlay {
+      .kc-preview-overlay {
     position: absolute;
     top: 45%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 30px;  /* Smaller fixed size */
-    height: 30px; /* Square to maintain consistency */
+    width: 35px !important;  /* Force this size with !important */
+    height: 35px !important; /* Force this size with !important */
     filter: brightness(1.5) contrast(1.2);
     mix-blend-mode: screen;
     opacity: 0.8;
