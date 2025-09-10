@@ -1355,75 +1355,75 @@ function handleFileUpload(event, designType) {
                 const img = new Image();
                 
                 img.onload = function() {
-                   // ALWAYS resize to standard size for consistency
-const STANDARD_SIZE = 250;
+    // ALWAYS resize to standard size for consistency
+    const STANDARD_SIZE = 250;
 
-// Set canvas to exact standard size
-processCanvas.width = STANDARD_SIZE;
-processCanvas.height = STANDARD_SIZE;
+    // Set canvas to exact standard size
+    processCanvas.width = STANDARD_SIZE;
+    processCanvas.height = STANDARD_SIZE;
 
-// Calculate scaling to fit the image within the square while maintaining aspect ratio
-const scale = Math.min(STANDARD_SIZE / img.width, STANDARD_SIZE / img.height);
-const scaledWidth = img.width * scale;
-const scaledHeight = img.height * scale;
+    // Calculate scaling to fit the image within the square while maintaining aspect ratio
+    const scale = Math.min(STANDARD_SIZE / img.width, STANDARD_SIZE / img.height);
+    const scaledWidth = img.width * scale;
+    const scaledHeight = img.height * scale;
 
-// Center the image on the canvas
-const x = (STANDARD_SIZE - scaledWidth) / 2;
-const y = (STANDARD_SIZE - scaledHeight) / 2;
+    // Center the image on the canvas
+    const x = (STANDARD_SIZE - scaledWidth) / 2;
+    const y = (STANDARD_SIZE - scaledHeight) / 2;
 
-// Clear canvas and draw scaled image
-ctx.clearRect(0, 0, STANDARD_SIZE, STANDARD_SIZE);
-ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-                    
-                    // Apply vector-ready processing with PROPER TRANSPARENCY
-                    const imageData = ctx.getImageData(0, 0, width, height);
-                    const data = imageData.data;
-                    
-                    for (let i = 0; i < data.length; i += 4) {
-                        const r = data[i];
-                        const g = data[i + 1];
-                        const b = data[i + 2];
-                        const alpha = data[i + 3];
-                        
-                        // Convert to grayscale
-                        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-                        
-                        // Apply threshold - this determines what becomes etched
-                        const threshold = 200;
-                        
-                        if (gray > threshold || alpha < 128) {
-                            // Light areas or transparent areas - make fully transparent
-                            data[i] = 0;
-                            data[i + 1] = 0;
-                            data[i + 2] = 0;
-                            data[i + 3] = 0; // Fully transparent
-                        } else {
-                            // Dark areas - make white (will appear as etching)
-                            data[i] = 255;
-                            data[i + 1] = 255;
-                            data[i + 2] = 255;
-                            data[i + 3] = 255; // Fully opaque
-                        }
-                    }
-                    
-                    ctx.putImageData(imageData, 0, 0);
-                    const processedDataUrl = processCanvas.toDataURL('image/png');
-                    
-                    document.getElementById('designPreview').src = processedDataUrl;
-                    document.getElementById('previewContainer').style.display = 'block';
-                    document.getElementById('fileUploadArea').classList.add('has-file');
-                    
-                    const styleOverlays = document.querySelectorAll('.kc-style-preview-overlay');
-                    styleOverlays.forEach(overlay => {
-                        overlay.src = processedDataUrl;
-                        overlay.style.display = 'block';
-                    });
-                    
-                    const caption = document.querySelector('.kc-preview-caption');
-                    if (caption) {
-                        caption.innerHTML = 'Preview shows your artwork as a stainless etch on a 20oz black tumbler.<br><span style="color: #10b981; font-size: 12px;">✓ Design optimized for laser engraving</span>';
-                    }
-                };
+    // Clear canvas and draw scaled image
+    ctx.clearRect(0, 0, STANDARD_SIZE, STANDARD_SIZE);
+    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
+    
+    // Apply vector-ready processing with PROPER TRANSPARENCY
+    const imageData = ctx.getImageData(0, 0, STANDARD_SIZE, STANDARD_SIZE);  // Changed from width, height
+    const data = imageData.data;
+    
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const alpha = data[i + 3];
+        
+        // Convert to grayscale
+        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+        
+        // Apply threshold - this determines what becomes etched
+        const threshold = 200;
+        
+        if (gray > threshold || alpha < 128) {
+            // Light areas or transparent areas - make fully transparent
+            data[i] = 0;
+            data[i + 1] = 0;
+            data[i + 2] = 0;
+            data[i + 3] = 0; // Fully transparent
+        } else {
+            // Dark areas - make white (will appear as etching)
+            data[i] = 255;
+            data[i + 1] = 255;
+            data[i + 2] = 255;
+            data[i + 3] = 255; // Fully opaque
+        }
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+    const processedDataUrl = processCanvas.toDataURL('image/png');
+    
+    document.getElementById('designPreview').src = processedDataUrl;
+    document.getElementById('previewContainer').style.display = 'block';
+    document.getElementById('fileUploadArea').classList.add('has-file');
+    
+    const styleOverlays = document.querySelectorAll('.kc-style-preview-overlay');
+    styleOverlays.forEach(overlay => {
+        overlay.src = processedDataUrl;
+        overlay.style.display = 'block';
+    });
+    
+    const caption = document.querySelector('.kc-preview-caption');
+    if (caption) {
+        caption.innerHTML = 'Preview shows your artwork as a stainless etch on a 20oz black tumbler.<br><span style="color: #10b981; font-size: 12px;">✓ Design optimized for laser engraving</span>';
+    }
+};
                 
                 img.src = e.target.result;
             } else {
