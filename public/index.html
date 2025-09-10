@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KC Cups - Start Your Fundraiser</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+	
     <style>
         * {
             margin: 0;
@@ -1329,7 +1332,11 @@ function showBookingWidget() {
     fireEvent('kc_booking_widget_shown');
 }
 
-// File upload handler
+
+// Configure PDF.js worker
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+// Enhanced file upload handler for Vercel deployment
 function handleFileUpload(event, designType) {
     const file = event.target.files[0];
     if (!file) return;
@@ -1347,88 +1354,17 @@ function handleFileUpload(event, designType) {
         reader.onload = function(e) {
             formData.design_1_data = e.target.result;
             
-            if (file.type.startsWith('image/')) {
-                const processCanvas = document.createElement('canvas');
-                const ctx = processCanvas.getContext('2d');
-                const img = new Image();
-                
-           img.onload = function() {
-    // Fixed canvas size for consistent output
-    const CANVAS_SIZE = 250;
-    
-    processCanvas.width = CANVAS_SIZE;
-    processCanvas.height = CANVAS_SIZE;
-    
-    // Clear canvas with transparent background
-    ctx.clearRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    
-    // Calculate scale to fit image within canvas while maintaining aspect ratio
-    const scale = Math.min(CANVAS_SIZE / img.width, CANVAS_SIZE / img.height);
-    const scaledWidth = img.width * scale;
-    const scaledHeight = img.height * scale;
-    
-    // Center the scaled image
-    const x = (CANVAS_SIZE - scaledWidth) / 2;
-    const y = (CANVAS_SIZE - scaledHeight) / 2;
-    
-    // Draw image at calculated position and size
-    ctx.drawImage(img, x, y, scaledWidth, scaledHeight);
-    
-    // Rest of your processing code remains the same...
-    const imageData = ctx.getImageData(0, 0, CANVAS_SIZE, CANVAS_SIZE);
-    const data = imageData.data;
-    
-    for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        const alpha = data[i + 3];
-        
-        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-        
-        if (gray < 180 && alpha > 50) {
-            data[i] = 255;
-            data[i + 1] = 255;
-            data[i + 2] = 255;
-            data[i + 3] = 255;
-        } else {
-            data[i] = 0;
-            data[i + 1] = 0;
-            data[i + 2] = 0;
-            data[i + 3] = 0;
-        }
-    }
-    
-    ctx.putImageData(imageData, 0, 0);
-    const processedDataUrl = processCanvas.toDataURL('image/png');
-    
-    // Continue with rest of code...
-    document.getElementById('designPreview').src = processedDataUrl;
-    document.getElementById('previewContainer').style.display = 'block';
-    document.getElementById('fileUploadArea').classList.add('has-file');
-    
-    const styleOverlays = document.querySelectorAll('.kc-style-preview-overlay');
-    styleOverlays.forEach(overlay => {
-        overlay.src = processedDataUrl;
-        overlay.style.display = 'block';
-    });
-    
-    const caption = document.querySelector('.kc-preview-caption');
-    if (caption) {
-        caption.innerHTML = 'Preview shows your artwork as a stainless etch on a 20oz black tumbler.<br><span style="color: #10b981; font-size: 12px;">✓ Design optimized for laser engraving</span>';
-    }
-};
-                
-                img.src = e.target.result;
+            // Route to appropriate handler based on file type
+            const fileType = file.type.toLowerCase();
+            
+            if (fileType === 'application/pdf') {
+                handlePDFWithPDFjs(e.target.result);
+            } else if (fileType === 'image/svg+xml' || file.name.toLowerCase().endsWith('.svg')) {
+                handleSVGConversion(e.target.result);
+            } else if (fileType.startsWith('image/')) {
+                handleRasterImage(e.target.result);
             } else {
-                document.getElementById('previewContainer').innerHTML = `
-                    <div style="padding: 20px; background: #f0f9ff; border-radius: 8px;">
-                        <p>📎 File uploaded: <strong>${file.name}</strong></p>
-                        <p style="font-size: 13px; color: #666;">File type: ${file.type || 'Unknown'}</p>
-                    </div>
-                `;
-                document.getElementById('previewContainer').style.display = 'block';
-                document.getElementById('fileUploadArea').classList.add('has-file');
+                showUploadConfirmation(file.name, file.type);
             }
         };
         reader.readAsDataURL(file);
@@ -1449,6 +1385,276 @@ function handleFileUpload(event, designType) {
         };
         reader.readAsDataURL(file);
     }
+}
+
+// Handle PDF files using PDF.js
+async function handlePDFWithPDFjs(pdfData) {
+    try {
+        // Remove data URL prefix to get base64
+        const base64 = pdfData.split(',')[1];
+        const pdfBytes = atob(base64);
+        const bytes = new Uint8Array(pdfBytes.length);
+        for (let i = 0; i < pdfBytes.length; i++) {
+            bytes[i] = pdfBytes.charCodeAt(i);
+        }
+        
+        // Load PDF with PDF.js
+        const loadingTask = pdfjsLib.getDocument({data: bytes});
+        const pdf = await loadingTask.promise;
+        
+        // Get first page
+        const page = await pdf.getPage(1);
+        
+        // Set up canvas
+        const viewport = page.getViewport({scale: 2}); // Higher scale for better quality
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d');
+        canvas.width = viewport.width;
+        canvas.height = viewport.height;
+        
+        // Render PDF page to canvas
+        await page.render({
+            canvasContext: context,
+            viewport: viewport
+        }).promise;
+        
+        // Process the rendered image for engraving effect
+        processCanvasForEngraving(canvas);
+        
+    } catch (error) {
+        console.error('PDF processing error:', error);
+        // Fallback to simple preview
+        showPDFPlaceholder(formData.design_1_filename);
+    }
+}
+
+// Handle SVG files with better conversion
+function handleSVGConversion(svgData) {
+    const img = new Image();
+    
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 500; // Higher resolution for better quality
+        
+        canvas.width = size;
+        canvas.height = size;
+        
+        // White background (optional, remove for transparency)
+        ctx.fillStyle = 'white';
+        ctx.fillRect(0, 0, size, size);
+        
+        // Calculate scaling
+        const scale = Math.min(size / img.width, size / img.height) * 0.9;
+        const x = (size - img.width * scale) / 2;
+        const y = (size - img.height * scale) / 2;
+        
+        // Draw SVG
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        
+        // Apply engraving effect
+        processCanvasForEngraving(canvas);
+    };
+    
+    img.onerror = function() {
+        // If direct loading fails, try alternative method
+        convertSVGAlternative(svgData);
+    };
+    
+    // For SVG, we need to ensure it's a proper data URL
+    if (svgData.includes('data:image/svg+xml')) {
+        img.src = svgData;
+    } else {
+        // Create a proper SVG data URL
+        const svgBlob = new Blob([svgData], {type: 'image/svg+xml'});
+        const url = URL.createObjectURL(svgBlob);
+        img.src = url;
+    }
+}
+
+// Alternative SVG conversion method
+function convertSVGAlternative(svgData) {
+    try {
+        // Extract SVG content from data URL if needed
+        let svgContent = svgData;
+        if (svgData.includes('base64,')) {
+            const base64 = svgData.split('base64,')[1];
+            svgContent = atob(base64);
+        }
+        
+        // Create a canvas and use a different rendering approach
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 500;
+        canvas.height = 500;
+        
+        // Create image from SVG string
+        const img = new Image();
+        const svgBlob = new Blob([svgContent], {type: 'image/svg+xml;charset=utf-8'});
+        const url = URL.createObjectURL(svgBlob);
+        
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, 500, 500);
+            URL.revokeObjectURL(url);
+            processCanvasForEngraving(canvas);
+        };
+        
+        img.onerror = function() {
+            URL.revokeObjectURL(url);
+            showUploadConfirmation(formData.design_1_filename, 'SVG');
+        };
+        
+        img.src = url;
+    } catch (error) {
+        console.error('SVG conversion error:', error);
+        showUploadConfirmation(formData.design_1_filename, 'SVG');
+    }
+}
+
+// Handle raster images (PNG, JPG)
+function handleRasterImage(imageData) {
+    const img = new Image();
+    
+    img.onload = function() {
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        const size = 500;
+        
+        canvas.width = size;
+        canvas.height = size;
+        
+        // Clear canvas
+        ctx.clearRect(0, 0, size, size);
+        
+        // Calculate scaling
+        const scale = Math.min(size / img.width, size / img.height) * 0.9;
+        const x = (size - img.width * scale) / 2;
+        const y = (size - img.height * scale) / 2;
+        
+        // Draw image
+        ctx.drawImage(img, x, y, img.width * scale, img.height * scale);
+        
+        // Apply engraving effect
+        processCanvasForEngraving(canvas);
+    };
+    
+    img.src = imageData;
+}
+
+// Process canvas for laser engraving effect
+function processCanvasForEngraving(canvas) {
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    // Apply engraving effect
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const alpha = data[i + 3];
+        
+        // Convert to grayscale
+        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+        
+        // High contrast conversion for engraving
+        if (alpha > 30) {
+            if (gray < 200) { // Dark areas become white (engraved)
+                data[i] = 255;
+                data[i + 1] = 255;
+                data[i + 2] = 255;
+                data[i + 3] = 255;
+            } else { // Light areas become transparent
+                data[i] = 0;
+                data[i + 1] = 0;
+                data[i + 2] = 0;
+                data[i + 3] = 0;
+            }
+        } else {
+            // Fully transparent areas stay transparent
+            data[i + 3] = 0;
+        }
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+    
+    // Convert to smaller size for preview
+    const previewCanvas = document.createElement('canvas');
+    const previewCtx = previewCanvas.getContext('2d');
+    previewCanvas.width = 250;
+    previewCanvas.height = 250;
+    previewCtx.drawImage(canvas, 0, 0, 250, 250);
+    
+    const processedDataUrl = previewCanvas.toDataURL('image/png');
+    
+    // Update previews
+    displayEngravingPreview(processedDataUrl);
+}
+
+// Display the engraving preview
+function displayEngravingPreview(processedDataUrl) {
+    document.getElementById('designPreview').src = processedDataUrl;
+    document.getElementById('previewContainer').style.display = 'block';
+    document.getElementById('fileUploadArea').classList.add('has-file');
+    
+    // Update style previews
+    const styleOverlays = document.querySelectorAll('.kc-style-preview-overlay');
+    styleOverlays.forEach(overlay => {
+        overlay.src = processedDataUrl;
+        overlay.style.display = 'block';
+    });
+    
+    // Update caption
+    const caption = document.querySelector('.kc-preview-caption');
+    if (caption) {
+        caption.innerHTML = 'Preview shows your artwork as a stainless etch on a 20oz black tumbler.<br><span style="color: #10b981; font-size: 12px;">✓ Design optimized for laser engraving</span>';
+    }
+}
+
+// Show PDF placeholder when PDF.js fails
+function showPDFPlaceholder(filename) {
+    const previewContainer = document.getElementById('previewContainer');
+    previewContainer.innerHTML = `
+        <div class="kc-preview-tumbler">
+            <img src="https://storage.googleapis.com/msgsndr/xifZnX9j50tYVbsS4czj/media/68b7c3a976561e36481a2d14.jpeg" alt="Black tumbler mockup">
+            <div style="position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); 
+                        width: 70px; height: 60px; background: rgba(255,255,255,0.9); 
+                        border-radius: 8px; display: flex; align-items: center; 
+                        justify-content: center; flex-direction: column; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#dc2626">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                <span style="font-size: 8px; color: #666; margin-top: 4px;">PDF</span>
+            </div>
+        </div>
+        <div style="padding: 12px; background: #fef3c7; border-radius: 8px; margin-top: 12px;">
+            <p style="font-size: 13px; color: #92400e; margin: 0;">
+                <strong>📎 PDF uploaded: ${filename}</strong><br>
+                <span style="font-size: 12px;">Our design team will convert your PDF for perfect engraving quality.</span>
+            </p>
+        </div>
+    `;
+    previewContainer.style.display = 'block';
+    document.getElementById('fileUploadArea').classList.add('has-file');
+}
+
+// Show upload confirmation for files that can't be previewed
+function showUploadConfirmation(filename, fileType) {
+    const previewContainer = document.getElementById('previewContainer');
+    previewContainer.innerHTML = `
+        <div style="padding: 20px; background: #f0fdf4; border-radius: 8px; border-left: 4px solid #10b981;">
+            <p style="margin: 0; color: #166534; font-weight: 600;">✓ File successfully uploaded!</p>
+            <p style="margin: 8px 0 0 0; color: #374151; font-size: 14px;">
+                <strong>${filename}</strong><br>
+                <span style="font-size: 13px; color: #6b7280;">Type: ${fileType || 'Design file'}</span>
+            </p>
+            <p style="margin: 8px 0 0 0; font-size: 12px; color: #059669;">
+                Our design team will optimize this file for laser engraving on your products.
+            </p>
+        </div>
+    `;
+    previewContainer.style.display = 'block';
+    document.getElementById('fileUploadArea').classList.add('has-file');
 }
 
 function updateStyleSelection() {
